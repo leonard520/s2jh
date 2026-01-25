@@ -14,7 +14,6 @@ import lab.s2jh.core.annotation.MetaData;
 import lab.s2jh.core.entity.BaseEntity;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.components.File.FileDef;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.joda.time.DateTime;
@@ -30,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @MetaData(value = "附件文件数据")
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
-public class AttachmentFile extends BaseEntity<String> implements FileDef {
+public class AttachmentFile extends BaseEntity<String> {
 
     /** 附件上传文件名称 */
     private String fileRealName;
@@ -166,6 +165,18 @@ public class AttachmentFile extends BaseEntity<String> implements FileDef {
     @Transient
     @JsonIgnore
     public static AttachmentFile buildInstance(File file) {
+        return buildInstance((long) file.length());
+    }
+
+    @Transient
+    @JsonIgnore
+    public static AttachmentFile buildInstance(org.springframework.web.multipart.MultipartFile file) {
+        return buildInstance(file.getSize());
+    }
+
+    @Transient
+    @JsonIgnore
+    private static AttachmentFile buildInstance(long fileLength) {
         //简便的做法用UUID作为主键，每次上传都会创建文件对象和数据记录，便于管理，但是存在相同文件重复保存情况
         String id = UUID.randomUUID().toString();
 
@@ -196,7 +207,7 @@ public class AttachmentFile extends BaseEntity<String> implements FileDef {
         AttachmentFile af = new AttachmentFile();
         af.setId(path.replaceAll("/", "") + id);
         af.setFileRelativePath(path);
-        af.setFileLength((int) file.length());
+        af.setFileLength((int) fileLength);
         return af;
     }
 

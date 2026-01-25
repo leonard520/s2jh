@@ -36,10 +36,8 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException exception) throws IOException, ServletException {
-        String username = null;
-        if (exception != null && exception.getAuthentication() != null) {
-            username = exception.getAuthentication().getName();
-        }
+        // Spring Security 4.x: get username from request parameter instead of exception
+        String username = request.getParameter("username");
         if (StringUtils.isNotBlank(username)) {
             User user = userService.findBySigninid(username);
             if (user != null) {

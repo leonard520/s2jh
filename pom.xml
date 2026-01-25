@@ -41,12 +41,11 @@
     <properties>
         <!-- 主要依赖库的版本定义 -->
         <s2jh.version>1.0.0</s2jh.version>
-        <struts2.version>2.3.16.1</struts2.version>
-        <spring.version>3.2.10.RELEASE</spring.version>
+        <spring.version>4.3.30.RELEASE</spring.version>
         <hibernate.version>4.1.8.Final</hibernate.version>
         <mybatis.version>3.1.1</mybatis.version>
         <javassist.version>3.15.0-GA</javassist.version>
-        <spring-data-jpa.version>1.6.2.RELEASE</spring-data-jpa.version>
+        <spring-data-jpa.version>1.11.23.RELEASE</spring-data-jpa.version>
         <cxf.version>2.7.0</cxf.version>
         <activemq.version>5.7.0</activemq.version>
         <quartz.version>2.2.1</quartz.version>
@@ -54,13 +53,13 @@
         <spymemcached.version>2.8.9</spymemcached.version>
         <hibernate-validator.version>4.3.1.Final</hibernate-validator.version>
         <jolokia.version>1.0.6</jolokia.version>
-        <jackson.version>2.2.3</jackson.version>
+        <jackson.version>2.9.10</jackson.version>
         <slf4j.version>1.7.7</slf4j.version>
         <commons-lang3.version>3.1</commons-lang3.version>
         <commons-io.version>2.4</commons-io.version>
         <guava.version>13.0.1</guava.version>
         <freemarker.version>2.3.19</freemarker.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.2</junit.version>
         <mockito.version>1.9.5</mockito.version>
         <powermock.version>1.5</powermock.version>
         <selenium.version>2.33.0</selenium.version>
@@ -84,27 +83,27 @@
         <repository>
             <id>central</id>
             <name>Central Repository</name>
-            <url>http://repo.maven.apache.org/maven2</url>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <repository>
-            <id>oschina</id>
-            <name>oschina repository</name>
-            <url>http://maven.oschina.net/content/groups/public/</url>
+            <id>aliyun</id>
+            <name>Aliyun Maven Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
         </repository>
         <repository>
-            <id>oschina-thirdparty</id>
-            <name>oschina thirdparty repository</name>
-            <url>http://maven.oschina.net/content/repositories/thirdparty/</url>
+            <id>aliyun-thirdparty</id>
+            <name>Aliyun Third Party Repository</name>
+            <url>https://maven.aliyun.com/repository/central</url>
         </repository>
         <repository>
             <id>org.springframework.maven.milestone</id>
             <name>Spring Framework Maven Milestone Repository</name>
-            <url>http://maven.springframework.org/milestone</url>
+            <url>https://repo.spring.io/milestone</url>
         </repository>
         <repository>
             <id>spy</id>
             <name>Spy Repository</name>
-            <url>http://files.couchbase.com/maven2/</url>
+            <url>https://files.couchbase.com/maven2/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -112,7 +111,7 @@
         <repository>
             <id>jahia</id>
             <name>jahia repository</name>
-            <url>http://maven.jahia.org/maven2/</url>
+            <url>https://maven.jahia.org/maven2/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -124,7 +123,7 @@
         <repository>
             <id>maven-restlet</id>
             <name>Restlet repository</name>
-            <url>http://maven.restlet.com</url>
+            <url>https://maven.restlet.com</url>
         </repository>
     </repositories>
 
@@ -161,93 +160,6 @@
                 <version>1.0</version>
                 <type>jar</type>
                 <scope>compile</scope>
-            </dependency>
-
-            <!-- Struts2 and Plugin -->
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-core</artifactId>
-                <version>${struts2.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>tools</artifactId>
-                        <groupId>com.sun</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-rest-plugin</artifactId>
-                <version>${struts2.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jackson-mapper-asl</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jackson-core-asl</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-lang</artifactId>
-                        <groupId>commons-lang</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>ezmorph</artifactId>
-                        <groupId>net.sf.ezmorph</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-convention-plugin</artifactId>
-                <version>${struts2.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-json-plugin</artifactId>
-                <version>${struts2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-config-browser-plugin</artifactId>
-                <version>${struts2.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-embeddedjsp-plugin</artifactId>
-                <version>${struts2.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-spring-plugin</artifactId>
-                <version>${struts2.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>spring-beans</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-core</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-context</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
@@ -312,12 +224,12 @@
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
-                <version>2.2.2</version>
+                <version>3.2.12</version>
             </dependency>
             <dependency>
-                <groupId>asm</groupId>
+                <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
-                <version>3.3.1</version>
+                <version>5.2</version>
             </dependency>
             <!-- AOP end -->
 
@@ -405,8 +317,8 @@
             <!-- j2ee web spec -->
             <dependency>
                 <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.5</version>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.0.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -426,17 +338,17 @@
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-web</artifactId>
-                <version>3.1.4.RELEASE</version>
+                <version>4.2.18.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-config</artifactId>
-                <version>3.1.4.RELEASE</version>
+                <version>4.2.18.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-cas</artifactId>
-                <version>3.1.4.RELEASE</version>
+                <version>4.2.18.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.jasig.cas.client</groupId>
@@ -654,11 +566,6 @@
             <!-- XML end -->
 
             <!-- jasperreports -->
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-jasperreports-plugin</artifactId>
-                <version>${struts2.version}</version>
-            </dependency>
             <dependency>
                 <groupId>net.sourceforge.jexcelapi</groupId>
                 <artifactId>jxl</artifactId>
@@ -1179,8 +1086,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.1</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>

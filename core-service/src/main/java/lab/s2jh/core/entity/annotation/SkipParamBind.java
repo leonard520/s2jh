@@ -5,10 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import lab.s2jh.core.web.interceptor.ExtParametersInterceptor;
-
 /**
- * @see ExtParametersInterceptor
+ * Annotation to mark setter methods that should be skipped during parameter binding.
+ * Used for security-sensitive properties that should not be bound from request parameters.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })

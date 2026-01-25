@@ -21,7 +21,6 @@ import lab.s2jh.auth.entity.RoleR2Privilege;
 import lab.s2jh.core.dao.BaseDao;
 import lab.s2jh.core.pagination.GroupPropertyFilter;
 import lab.s2jh.core.service.BaseService;
-import lab.s2jh.core.web.filter.PostStrutsPrepareAndExecuteFilter;
 import lab.s2jh.rpt.dao.ReportDefDao;
 import lab.s2jh.rpt.entity.ReportDef;
 import lab.s2jh.rpt.entity.ReportDefR2Role;
@@ -107,10 +106,8 @@ public class PrivilegeService extends BaseService<Privilege, String> {
 
         Map<String, Collection<ConfigAttribute>> resourceMap = new LinkedHashMap<String, Collection<ConfigAttribute>>();
 
-        //处理所有SecurityControllIgnore标记的权限为登录可访问, 数据集合来源为Struts2注入设置securityControllIgnoreUrls
-        for (String url : PostStrutsPrepareAndExecuteFilter.securityControlIgnoreUrls) {
-            addURL2Role(resourceMap, url, Role.ROLE_ANONYMOUSLY_CODE);
-        }
+        // Security control ignore URLs are now handled by Spring Security configuration
+        // The PostStrutsPrepareAndExecuteFilter was removed during Struts-to-Spring migration
 
         //设置角色关联权限
         Iterable<RoleR2Privilege> r2s = roleR2PrivilegeDao.findEnabledExcludeRole(Role.ROLE_ADMIN_CODE);

@@ -2,31 +2,29 @@ package lab.s2jh.core.web.convert;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.opensymphony.xwork2.conversion.impl.DefaultTypeConverter;
-
-public class DateConverter extends DefaultTypeConverter {
+/**
+ * Date converter utility class for parsing and formatting dates.
+ * Replaces the Struts/OGNL-based DateConverter.
+ */
+public class DateConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(DateConverter.class);
 
     private static final String DATETIME_WITHOUTSEC_PATTERN = "yyyy-MM-dd HH:mm";
-
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-
     private static final String DATE_PATTERN = "yyyy-MM-dd";
-
     private static final String MONTH_PATTERN = "yyyy-MM";
 
     /**
-     * Convert value between types
+     * Convert value to Date
      */
-    public Object convertValue(Map ognlContext, Object value, Class toType) {
+    public Object convertValue(Object value, Class<?> toType) {
         Object result = null;
         if (toType == Date.class) {
             result = doConvertToDate(value);
@@ -38,11 +36,8 @@ public class DateConverter extends DefaultTypeConverter {
 
     /**
      * Convert String to Date
-     *
-     * @param value
-     * @return
      */
-    private Date doConvertToDate(Object value) {
+    public Date doConvertToDate(Object value) {
         if (value == null) {
             return null;
         }
@@ -54,28 +49,15 @@ public class DateConverter extends DefaultTypeConverter {
                 if (StringUtils.isBlank(date)) {
                     return null;
                 }
-                result = DateUtils.parseDate((String) value, new String[] { DATE_PATTERN, DATETIME_PATTERN,
-                        MONTH_PATTERN, DATETIME_WITHOUTSEC_PATTERN });
-
-                // all patterns failed, try a milliseconds constructor
-                if (result == null && StringUtils.isNotEmpty((String) value)) {
-
-                    result = new Date(new Long((String) value).longValue());
-                }
+                result = DateUtils.parseDate((String) value, new String[] { 
+                    DATE_PATTERN, DATETIME_PATTERN, MONTH_PATTERN, DATETIME_WITHOUTSEC_PATTERN 
+                });
             } catch (Exception e) {
-                logger.error("Converting  to Date fails!", e);
+                logger.warn("Date conversion error: " + value, e);
             }
-
-        } else if (value instanceof Object[]) {
-            // let's try to convert the first element only
-            Object[] array = (Object[]) value;
-
-            if ((array != null) && (array.length >= 1)) {
-                value = array[0];
-                result = doConvertToDate(value);
-            }
-
-        } else if (Date.class.isAssignableFrom(value.getClass())) {
+        } else if (value instanceof Object[] && ((Object[]) value).length > 0) {
+            return doConvertToDate(((Object[]) value)[0]);
+        } else if (value instanceof Date) {
             result = (Date) value;
         }
         return result;
@@ -83,16 +65,15 @@ public class DateConverter extends DefaultTypeConverter {
 
     /**
      * Convert Date to String
-     *
-     * @param value
-     * @return
      */
     private String doConvertToString(Object value) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATETIME_PATTERN);
-        String result = null;
-        if (value instanceof Date) {
-            result = simpleDateFormat.format(value);
+        if (value == null) {
+            return null;
         }
-        return result;
+        if (value instanceof Date) {
+            SimpleDateFormat sdf = new SimpleDateFormat(DATETIME_PATTERN);
+            return sdf.format((Date) value);
+        }
+        return value.toString();
     }
 }

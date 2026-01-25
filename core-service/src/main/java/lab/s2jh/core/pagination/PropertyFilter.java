@@ -21,8 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import lab.s2jh.core.util.reflection.ConvertUtils;
 import lab.s2jh.core.web.convert.DateConverter;
 import lab.s2jh.core.web.util.ServletUtils;
-import ognl.OgnlRuntime;
 
+import java.beans.PropertyDescriptor;
+import org.springframework.beans.BeanUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.record.formula.functions.T;
@@ -192,11 +193,13 @@ public class PropertyFilter {
                 Method method = null;
                 String[] namesSplits = StringUtils.split(propertyNames[0], ".");
                 if (namesSplits.length == 1) {
-                    method = OgnlRuntime.getGetMethod(null, entityClass, propertyNames[0]);
+                    PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(entityClass, propertyNames[0]);
+                    method = pd != null ? pd.getReadMethod() : null;
                 } else {
                     Class<?> retClass = entityClass;
                     for (String nameSplit : namesSplits) {
-                        method = OgnlRuntime.getGetMethod(null, retClass, nameSplit);
+                        PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(retClass, nameSplit);
+                        method = pd != null ? pd.getReadMethod() : null;
                         retClass = method.getReturnType();
                         if (Collection.class.isAssignableFrom(retClass)) {
                             Type genericReturnType = method.getGenericReturnType();
@@ -253,7 +256,7 @@ public class PropertyFilter {
                 || matchType.equals(MatchType.NU)) {
             return new Boolean(BooleanUtils.toBoolean(value));
         } else if (propertyClass.equals(Date.class) || propertyClass.equals(DateTime.class)) {
-            return dateConverter.convertValue(null, null, null, null, value, Date.class);
+            return dateConverter.convertValue(value, Date.class);
         } else {
             return ConvertUtils.convertStringToObject(value, propertyClass);
         }

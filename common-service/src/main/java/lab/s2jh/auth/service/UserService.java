@@ -32,7 +32,6 @@ import lab.s2jh.ctx.MailService;
 
 import org.activiti.engine.IdentityService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -370,7 +369,8 @@ public class UserService extends BaseService<User, Long> {
         user.setRandomCode(UUID.randomUUID().toString());
         userDao.save(user);
 
-        HttpServletRequest request = ServletActionContext.getRequest();
+        HttpServletRequest request = ((org.springframework.web.context.request.ServletRequestAttributes) 
+            org.springframework.web.context.request.RequestContextHolder.getRequestAttributes()).getRequest();
         int serverPort = request.getServerPort();
         // Reconstruct original requesting URL
         StringBuffer url = new StringBuffer();

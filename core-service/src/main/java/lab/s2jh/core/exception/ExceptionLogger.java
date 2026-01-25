@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import lab.s2jh.core.security.AuthContextHolder;
-import lab.s2jh.core.web.interceptor.ExtTokenInterceptor;
+import lab.s2jh.core.web.mvc.interceptor.TokenHandlerInterceptor;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,8 +24,8 @@ public class ExceptionLogger {
     public static String logForHttpRequest(Throwable e, HttpServletRequest request) {
 
         //异常情况移除用于控制重复提交的Token记录，使得用户可以再次提交
-        //@see lab.s2jh.core.web.interceptor.ExtTokenInterceptor
-        request.getSession(false).removeAttribute(ExtTokenInterceptor.TOKEN_COUNTER);
+        //@see lab.s2jh.core.web.mvc.interceptor.TokenHandlerInterceptor
+        request.getSession(false).removeAttribute(TokenHandlerInterceptor.TOKEN_COUNTER);
 
         String requestUri = (String) request.getAttribute("javax.servlet.error.request_uri");
         if (requestUri == null) {

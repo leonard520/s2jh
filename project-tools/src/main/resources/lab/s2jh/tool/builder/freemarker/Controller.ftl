@@ -1,17 +1,24 @@
-package ${root_package}.web.action;
+package ${root_package}.web.mvc;
 
 import lab.s2jh.core.annotation.MetaData;
 import ${root_package}.entity.${entity_name};
 import ${root_package}.service.${entity_name}Service;
 import lab.s2jh.core.service.BaseService;
-import lab.s2jh.web.action.BaseController;
+import lab.s2jh.web.mvc.BaseMvcController;
 import lab.s2jh.core.web.view.OperationResult;
 
-import org.apache.struts2.rest.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+@Controller
+@RequestMapping("/admin/${root_package_path}/${entity_name_path}")
 @MetaData("${model_title}管理")
-public class ${entity_name}Controller extends BaseController<${entity_name},${id_type}> {
+public class ${entity_name}MvcController extends BaseMvcController<${entity_name},${id_type}> {
 
     @Autowired
     private ${entity_name}Service ${entity_name_uncapitalize}Service;
@@ -27,39 +34,50 @@ public class ${entity_name}Controller extends BaseController<${entity_name},${id
     }
 
     @MetaData("[TODO方法作用]")
-    public HttpHeaders todo() {
+    @PostMapping("todo")
+    @ResponseBody
+    public OperationResult todo() {
         //TODO
-        setModel(OperationResult.buildSuccessResult("TODO操作完成"));
-        return buildDefaultHttpHeaders();
+        return OperationResult.buildSuccessResult("TODO操作完成");
     }
     
     @Override
     @MetaData("创建")
-    public HttpHeaders doCreate() {
+    @PostMapping("doCreate")
+    @ResponseBody
+    public OperationResult doCreate() {
         return super.doCreate();
     }
 
     @Override
     @MetaData("更新")
-    public HttpHeaders doUpdate() {
+    @PostMapping("doUpdate")
+    @ResponseBody
+    public OperationResult doUpdate() {
         return super.doUpdate();
     }
     
     @Override
     @MetaData("保存")
-    public HttpHeaders doSave() {
+    @PostMapping("doSave")
+    @ResponseBody
+    public OperationResult doSave() {
         return super.doSave();
     }
 
     @Override
     @MetaData("删除")
-    public HttpHeaders doDelete() {
+    @PostMapping("doDelete")
+    @ResponseBody
+    public OperationResult doDelete() {
         return super.doDelete();
     }
 
     @Override
     @MetaData("查询")
-    public HttpHeaders findByPage() {
+    @GetMapping("findByPage")
+    @ResponseBody
+    public Page<${entity_name}> findByPage() {
         return super.findByPage();
     }
 }
