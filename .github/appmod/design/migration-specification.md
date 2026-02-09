@@ -1,9 +1,9 @@
-# S2JH Migration Specification: Struts2 to Spring MVC (REWRITE Mode)
+# S2JH Application Framework Modernization Specification
 
 **Project:** s2jh  
 **Migration Mode:** REWRITE  
 **Phase:** Design - Specification  
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Date:** 2025-02-09  
 **Status:** DRAFT
 
@@ -27,19 +27,19 @@
 ## 1. Executive Summary
 
 ### 1.1 Purpose
-This specification defines the complete requirements for migrating the S2JH enterprise application framework from Struts2 2.3.16.1 to Spring Boot 3.x using the REWRITE approach. The migration will create a modern, maintainable, and scalable platform while preserving all existing business functionality.
+This specification defines the complete requirements for modernizing the S2JH enterprise application framework. The modernization will create a modern, maintainable, and scalable platform while preserving all existing business functionality and improving system performance, security, and maintainability.
 
 ### 1.2 Scope
 
 **In Scope:**
-- Complete migration of all 354 Java files
-- Conversion of 11 Struts2 controllers to Spring MVC REST controllers
-- Migration of 40 service classes to clean architecture pattern
-- Refactoring of 44 JPA entities to rich domain models
-- Replacement of 101 JSP pages with REST API (optional frontend)
-- Upgrade from JDK 1.6 to JDK 17+
-- Database schema preservation with Flyway version control
-- Security migration from Spring Security 3.x to 6.x
+- Complete migration of all application code (354 files)
+- Conversion of all web controllers to modern RESTful API design
+- Migration of all service classes to maintainable architecture
+- Refactoring of all data entities to support business logic encapsulation
+- Replacement of server-side view templates with API-first approach
+- Upgrade to modern, supported runtime platform
+- Database schema preservation with version-controlled migrations
+- Security system modernization to current standards
 - All cross-cutting concerns (logging, auditing, validation)
 
 **Out of Scope:**
@@ -52,7 +52,7 @@ This specification defines the complete requirements for migrating the S2JH ente
 ### 1.3 Success Criteria
 
 **Technical Success:**
-- Zero Struts2 dependencies in final codebase
+- Zero legacy framework dependencies in final codebase
 - Test coverage ≥ 80% for domain layer, ≥ 70% for application layer
 - API response time: p95 < 200ms, p99 < 500ms
 - Zero critical/high security vulnerabilities
@@ -67,12 +67,12 @@ This specification defines the complete requirements for migrating the S2JH ente
 
 ### 1.4 Assumptions
 
-**ASS-001:** Development team has Spring Boot 3.x experience  
+**ASS-001:** Development team has modern enterprise application development experience  
 **ASS-002:** Database schema can be preserved without major changes  
 **ASS-003:** Frontend can be decoupled (API-first approach acceptable)  
 **ASS-004:** 28-week timeline is acceptable to business  
 **ASS-005:** Parallel run of legacy + new system is possible  
-**ASS-006:** All Struts2 functionality can be replicated in Spring MVC  
+**ASS-006:** All legacy functionality can be replicated in modern platform  
 
 ---
 
@@ -85,25 +85,25 @@ This specification defines the complete requirements for migrating the S2JH ente
 **Complexity:** Medium
 
 **Description:**  
-Migrate hierarchical menu management functionality from Struts2 to Spring Boot REST API.
+Modernize hierarchical menu management functionality with RESTful API support.
 
 **Current Implementation:**
 - Entity: `Menu.java` (with 10 @Entity references)
 - Service: `MenuService.java`
-- Controller: `MenuController.java` (Struts2)
+- Controller: `MenuController.java` (legacy web framework)
 - Supports hierarchical menu structure (parent-child relationships)
 - Dynamic permission-based menu rendering
 
 **Target Implementation:**
-- Domain entity: `Menu` (rich domain model)
-- Use cases:
-  - `CreateMenuUseCase`
-  - `UpdateMenuUseCase`
-  - `DeleteMenuUseCase`
-  - `GetMenuTreeUseCase`
-  - `ReorderMenuUseCase`
-- Repository: `MenuRepository` interface (domain layer)
-- REST endpoints:
+- Domain entity: `Menu` (with business logic)
+- Business operations:
+  - Create menu item
+  - Update menu item
+  - Delete menu item
+  - Retrieve menu tree structure
+  - Reorder menu items
+- Repository: Data access abstraction
+- API endpoints:
   ```
   POST   /api/v1/menus
   GET    /api/v1/menus/{id}
@@ -141,13 +141,13 @@ Migrate data dictionary (lookup tables) functionality for managing code-value pa
 - Used across application for dropdowns, status codes, etc.
 
 **Target Implementation:**
-- Domain entity: `DataDictionary` with `DataDictEntry` value object
-- Use cases:
-  - `CreateDataDictCategoryUseCase`
-  - `AddDataDictEntryUseCase`
-  - `UpdateDataDictEntryUseCase`
-  - `GetDataDictEntriesByCategoryUseCase`
-- REST endpoints:
+- Domain entity: `DataDictionary` with category-based entries
+- Business operations:
+  - Create data dictionary category
+  - Add data dictionary entry
+  - Update data dictionary entry
+  - Retrieve entries by category
+- API endpoints:
   ```
   POST   /api/v1/data-dict/categories
   POST   /api/v1/data-dict/categories/{category}/entries
@@ -159,8 +159,8 @@ Migrate data dictionary (lookup tables) functionality for managing code-value pa
 **Acceptance Criteria:**
 - AC-SYS-002.1: Can define custom categories
 - AC-SYS-002.2: Can add/update/delete entries within categories
-- AC-SYS-002.3: Entries are cached for performance (Redis/Caffeine)
-- AC-SYS-002.4: Support for multi-language entries (i18n)
+- AC-SYS-002.3: Entries are cached for performance
+- AC-SYS-002.4: Support for multi-language entries (internationalization)
 - AC-SYS-002.5: Validation ensures unique codes within category
 - AC-SYS-002.6: API supports pagination and filtering
 
@@ -181,14 +181,14 @@ Migrate system configuration management (key-value properties stored in database
 
 **Target Implementation:**
 - Domain entity: `ConfigProperty`
-- Use cases:
-  - `UpdateConfigPropertyUseCase`
-  - `GetConfigPropertyUseCase`
-  - `GetAllConfigPropertiesUseCase`
-- Spring Boot integration:
-  - Implement custom `PropertySource`
-  - Refresh properties without restart (`@RefreshScope`)
-- REST endpoints:
+- Business operations:
+  - Update configuration property
+  - Retrieve configuration property
+  - Retrieve all configuration properties
+- Platform integration:
+  - Configuration loaded from database on startup
+  - Dynamic refresh capability without restart
+- API endpoints:
   ```
   GET    /api/v1/config
   GET    /api/v1/config/{key}
@@ -198,9 +198,9 @@ Migrate system configuration management (key-value properties stored in database
 
 **Acceptance Criteria:**
 - AC-SYS-003.1: Config properties are loaded from database on startup
-- AC-SYS-003.2: Can update properties via REST API
-- AC-SYS-003.3: Changes take effect without restart (for @RefreshScope beans)
-- AC-SYS-003.4: Sensitive properties are encrypted (AES-256)
+- AC-SYS-003.2: Can update properties via API
+- AC-SYS-003.3: Changes take effect without restart (for dynamically refreshable configuration)
+- AC-SYS-003.4: Sensitive properties are encrypted with strong encryption
 - AC-SYS-003.5: Audit log tracks configuration changes
 - AC-SYS-003.6: Type validation (string, number, boolean, JSON)
 
@@ -225,23 +225,23 @@ Migrate user account management with authentication and profile management.
 
 **Target Implementation:**
 - Domain entities:
-  - `User` (aggregate root)
-  - `UserProfile` (value object)
-  - `Credentials` (value object)
-- Use cases:
-  - `RegisterUserUseCase`
-  - `UpdateUserProfileUseCase`
-  - `ChangePasswordUseCase`
-  - `ResetPasswordUseCase`
-  - `ActivateUserUseCase`
-  - `DeactivateUserUseCase`
-  - `GetUserUseCase`
-  - `SearchUsersUseCase`
+  - `User` (primary entity)
+  - User profile information
+  - User credentials
+- Business operations:
+  - Register new user
+  - Update user profile
+  - Change password
+  - Reset password (with verification)
+  - Activate user account
+  - Deactivate user account
+  - Retrieve user information
+  - Search users
 - Domain events:
-  - `UserRegisteredEvent`
-  - `PasswordChangedEvent`
-  - `UserActivatedEvent`
-- REST endpoints:
+  - User registered
+  - Password changed
+  - User activated
+- API endpoints:
   ```
   POST   /api/v1/users                    # Register user
   GET    /api/v1/users/{id}
@@ -256,8 +256,8 @@ Migrate user account management with authentication and profile management.
 
 **Acceptance Criteria:**
 - AC-AUTH-001.1: Password must meet complexity requirements (8+ chars, mixed case, numbers)
-- AC-AUTH-001.2: Passwords are hashed with BCrypt (strength=10)
-- AC-AUTH-001.3: Failed login attempts are tracked and account locked after 5 failures
+- AC-AUTH-001.2: Passwords are hashed with strong, industry-standard algorithm
+- AC-AUTH-001.3: Failed login attempts are tracked and account locked after 5 consecutive failures
 - AC-AUTH-001.4: Account lockout duration is configurable (default: 30 minutes)
 - AC-AUTH-001.5: Password reset requires email verification
 - AC-AUTH-001.6: User profile supports custom attributes (key-value pairs)
@@ -286,16 +286,16 @@ Migrate role-based access control (RBAC) functionality.
 
 **Target Implementation:**
 - Domain entities:
-  - `Role` (aggregate root)
-  - `RoleAssignment` (value object)
-- Use cases:
-  - `CreateRoleUseCase`
-  - `UpdateRoleUseCase`
-  - `DeleteRoleUseCase`
-  - `AssignRoleToUserUseCase`
-  - `RevokeRoleFromUserUseCase`
-  - `AssignPrivilegesToRoleUseCase`
-- REST endpoints:
+  - `Role` (primary entity)
+  - Role assignment tracking
+- Business operations:
+  - Create role
+  - Update role
+  - Delete role
+  - Assign role to user
+  - Revoke role from user
+  - Assign privileges to role
+- API endpoints:
   ```
   POST   /api/v1/roles
   GET    /api/v1/roles/{id}
@@ -331,14 +331,14 @@ Migrate fine-grained permission system for resource access control.
 **Target Implementation:**
 - Domain entity: `Privilege`
 - Permission format: `{RESOURCE}:{ACTION}` (e.g., "user:create", "report:view")
-- Use cases:
-  - `CreatePrivilegeUseCase`
-  - `DeletePrivilegeUseCase`
-  - `CheckPrivilegeUseCase`
-- Spring Security integration:
-  - Method security: `@PreAuthorize("hasPrivilege('user:create')")`
-  - URL security: role-based and privilege-based
-- REST endpoints:
+- Business operations:
+  - Create privilege
+  - Delete privilege
+  - Check privilege for user
+- Security integration:
+  - Method-level security enforcement
+  - URL-based security with role and privilege support
+- API endpoints:
   ```
   POST   /api/v1/privileges
   GET    /api/v1/privileges
@@ -368,13 +368,13 @@ Migrate organizational hierarchy management for users.
 - Hierarchical structure (parent-child)
 
 **Target Implementation:**
-- Domain entity: `Department` (composite pattern)
-- Use cases:
-  - `CreateDepartmentUseCase`
-  - `UpdateDepartmentUseCase`
-  - `MoveDepartmentUseCase`
-  - `GetDepartmentTreeUseCase`
-- REST endpoints:
+- Domain entity: `Department` (hierarchical structure)
+- Business operations:
+  - Create department
+  - Update department
+  - Move department within hierarchy
+  - Retrieve department tree structure
+- API endpoints:
   ```
   POST   /api/v1/departments
   GET    /api/v1/departments/{id}
@@ -409,18 +409,19 @@ Migrate file upload, storage, and retrieval functionality.
 - Metadata tracking (filename, size, MIME type, uploader)
 
 **Target Implementation:**
-- Domain entity: `Attachment` (aggregate root)
-- Value objects: `FileMetadata`, `FileContent`
-- Use cases:
-  - `UploadFileUseCase`
-  - `DownloadFileUseCase`
-  - `DeleteFileUseCase`
-  - `ListFilesUseCase`
+- Domain entity: `Attachment` (primary entity)
+- File metadata: filename, size, MIME type, uploader
+- File content handling
+- Business operations:
+  - Upload file
+  - Download file
+  - Delete file
+  - List files
 - Storage strategies:
   - Local file system (development)
-  - S3-compatible storage (production)
-  - Database BLOB (small files)
-- REST endpoints:
+  - Cloud object storage (production)
+  - Database storage (small files)
+- API endpoints:
   ```
   POST   /api/v1/files                    # Upload (multipart/form-data)
   GET    /api/v1/files/{id}               # Download
@@ -432,8 +433,8 @@ Migrate file upload, storage, and retrieval functionality.
 **Acceptance Criteria:**
 - AC-FILE-001.1: Supports files up to 100MB
 - AC-FILE-001.2: File type validation (whitelist approach)
-- AC-FILE-001.3: Virus scanning integration (ClamAV or similar)
-- AC-FILE-001.4: File deduplication (hash-based)
+- AC-FILE-001.3: Virus scanning integration for uploaded files
+- AC-FILE-001.4: File deduplication based on content hash
 - AC-FILE-001.5: Chunked upload for large files
 - AC-FILE-001.6: Thumbnail generation for images
 - AC-FILE-001.7: Access control: only uploader or authorized users can access
@@ -464,15 +465,15 @@ Migrate public announcement and notification functionality.
 
 **Target Implementation:**
 - Domain entities:
-  - `Post` (aggregate root)
-  - `PostReadStatus` (entity)
-- Use cases:
-  - `CreatePostUseCase`
-  - `PublishPostUseCase`
-  - `GetPostsUseCase`
-  - `MarkPostAsReadUseCase`
-  - `GetUnreadPostCountUseCase`
-- REST endpoints:
+  - `Post` (primary entity)
+  - Post read tracking
+- Business operations:
+  - Create post
+  - Publish post
+  - Retrieve posts
+  - Mark post as read
+  - Get unread post count
+- API endpoints:
   ```
   POST   /api/v1/posts
   GET    /api/v1/posts/{id}
@@ -506,26 +507,25 @@ Migrate report definition and execution functionality.
 **Current Implementation:**
 - Entities: `ReportDef.java`, `ReportParam.java`
 - Service: `ReportService.java`
-- JasperReports integration
+- Report generation library integration
 - Parameterized reports
 - Role-based access control
 
 **Target Implementation:**
 - Domain entities:
-  - `ReportDefinition` (aggregate root)
-  - `ReportParameter` (entity)
-  - `ReportExecution` (entity)
-- Use cases:
-  - `CreateReportDefinitionUseCase`
-  - `UpdateReportDefinitionUseCase`
-  - `ExecuteReportUseCase`
-  - `GetReportResultUseCase`
-  - `ScheduleReportUseCase`
+  - `ReportDefinition` (primary entity)
+  - Report parameters
+  - Report execution tracking
+- Business operations:
+  - Create report definition
+  - Update report definition
+  - Execute report
+  - Retrieve report results
+  - Schedule report execution
 - Reporting engine options:
-  - **Option A:** Keep JasperReports (upgrade to latest)
-  - **Option B:** Migrate to BIRT
-  - **Option C:** Custom solution (SQL + export libraries)
-- REST endpoints:
+  - **Option A:** Modern report generation library
+  - **Option B:** Custom solution with query execution and export capabilities
+- API endpoints:
   ```
   POST   /api/v1/reports
   GET    /api/v1/reports/{id}
@@ -547,7 +547,7 @@ Migrate report definition and execution functionality.
 - AC-RPT-001.8: Scheduled reports can be configured (cron expression)
 
 **Open Decision:**
-- [ ] Select reporting engine (JasperReports, BIRT, or custom)
+- [ ] Select reporting engine solution
 
 ---
 
@@ -558,23 +558,23 @@ Migrate report definition and execution functionality.
 **Complexity:** Medium
 
 **Description:**  
-Migrate application event logging and audit trail functionality.
+Modernize application event logging and audit trail functionality.
 
 **Current Implementation:**
 - Entities: `LoggingEvent.java`, `LoggingEventProperty.java`, `LoggingEventException.java`
-- Database appender for Logback
-- Structured logging with MDC
+- Database-backed logging
+- Structured logging with context
 
 **Target Implementation:**
-- **Recommended:** Migrate to ELK Stack or similar
-  - Application logs → Logstash → Elasticsearch → Kibana
+- **Recommended:** Modern centralized logging infrastructure
+  - Application logs → Log aggregator → Search engine → Visualization
   - Remove database logging
   - Use structured JSON logging
 - **Alternative:** Keep database logging
   - Simplify schema
   - Add retention policy
   - Add archiving strategy
-- REST endpoints:
+- API endpoints:
   ```
   GET    /api/v1/logs?level={level}&from={datetime}&to={datetime}
   GET    /api/v1/logs/{id}
@@ -589,7 +589,7 @@ Migrate application event logging and audit trail functionality.
 - AC-LOG-001.6: Performance impact < 2% overhead
 
 **Open Decision:**
-- [ ] Select logging strategy (ELK Stack vs Database)
+- [ ] Select logging infrastructure strategy
 
 ---
 
@@ -600,28 +600,29 @@ Migrate application event logging and audit trail functionality.
 **Complexity:** Medium
 
 **Description:**  
-Migrate scheduled job management and execution.
+Modernize scheduled job management and execution.
 
 **Current Implementation:**
 - Entities: `JobBeanCfg.java`, `JobRunHist.java`
-- Quartz Scheduler 2.2.1
+- Job scheduling framework
 - Database-backed job store
 - Dynamic job configuration
 
 **Target Implementation:**
-- **Option A:** Upgrade to Quartz 2.3.2
-- **Option B:** Migrate to Spring Scheduler (`@Scheduled`)
-- **Option C:** External scheduler (Airflow, Temporal)
+- **Option A:** Modern job scheduling library
+- **Option B:** Built-in platform scheduling
+- **Option C:** External job orchestration platform
 - Domain entities:
   - `JobDefinition`
   - `JobExecution`
-- Use cases:
-  - `CreateJobUseCase`
-  - `UpdateJobUseCase`
-  - `TriggerJobUseCase`
-  - `PauseJobUseCase`
-  - `GetJobHistoryUseCase`
-- REST endpoints:
+- Business operations:
+  - Create job
+  - Update job
+  - Trigger job manually
+  - Pause job
+  - Resume job
+  - Retrieve job execution history
+- API endpoints:
   ```
   POST   /api/v1/jobs
   GET    /api/v1/jobs/{id}
@@ -642,7 +643,7 @@ Migrate scheduled job management and execution.
 - AC-SCHED-001.7: Job parameters are supported
 
 **Open Decision:**
-- [ ] Select scheduling solution (Quartz vs Spring Scheduler)
+- [ ] Select scheduling solution
 
 ---
 
@@ -662,18 +663,18 @@ Migrate purchase order functionality.
 
 **Target Implementation:**
 - Domain entities:
-  - `PurchaseOrder` (aggregate root)
-  - `OrderLine` (entity)
-  - `OrderStatus` (value object/enum)
-- Use cases:
-  - `CreatePurchaseOrderUseCase`
-  - `SubmitPurchaseOrderUseCase`
-  - `ApprovePurchaseOrderUseCase`
-  - `CancelPurchaseOrderUseCase`
+  - `PurchaseOrder` (primary entity)
+  - Order line items
+  - Order status tracking
+- Business operations:
+  - Create purchase order
+  - Submit purchase order for approval
+  - Approve purchase order
+  - Cancel purchase order
 - Domain events:
-  - `PurchaseOrderSubmittedEvent`
-  - `PurchaseOrderApprovedEvent`
-- REST endpoints:
+  - Purchase order submitted
+  - Purchase order approved
+- API endpoints:
   ```
   POST   /api/v1/purchase-orders
   GET    /api/v1/purchase-orders/{id}
@@ -707,21 +708,21 @@ Migrate inventory and stock management.
 
 **Target Implementation:**
 - Domain entities:
-  - `Product` (aggregate root)
-  - `Warehouse` (aggregate root)
-  - `Stock` (entity)
-  - `StockMovement` (entity)
-- Use cases:
-  - `ReceiveStockUseCase`
-  - `IssueStockUseCase`
-  - `TransferStockUseCase`
-  - `AdjustStockUseCase`
-  - `GetStockLevelUseCase`
+  - `Product` (primary entity)
+  - `Warehouse` (primary entity)
+  - Stock levels
+  - Stock movement records
+- Business operations:
+  - Receive stock
+  - Issue stock
+  - Transfer stock between warehouses
+  - Adjust stock (corrections)
+  - Query stock levels
 - Domain events:
-  - `StockReceivedEvent`
-  - `StockIssuedEvent`
-  - `LowStockAlertEvent`
-- REST endpoints:
+  - Stock received
+  - Stock issued
+  - Low stock alert
+- API endpoints:
   ```
   POST   /api/v1/inventory/receive
   POST   /api/v1/inventory/issue
@@ -755,14 +756,14 @@ Migrate sales order and delivery management.
 
 **Target Implementation:**
 - Domain entities:
-  - `SalesOrder` (aggregate root)
-  - `Delivery` (aggregate root)
-  - `DeliveryLine` (entity)
-- Use cases:
-  - `CreateDeliveryUseCase`
-  - `ConfirmDeliveryUseCase`
-  - `CancelDeliveryUseCase`
-- REST endpoints:
+  - `SalesOrder` (primary entity)
+  - `Delivery` (primary entity)
+  - Delivery line items
+- Business operations:
+  - Create delivery
+  - Confirm delivery
+  - Cancel delivery
+- API endpoints:
   ```
   POST   /api/v1/deliveries
   GET    /api/v1/deliveries/{id}
@@ -793,16 +794,16 @@ Migrate financial transaction and chart of accounts.
 
 **Target Implementation:**
 - Domain entities:
-  - `Account` (aggregate root)
-  - `Transaction` (aggregate root)
-  - `JournalEntry` (entity)
-  - `TradingPartner` (aggregate root)
-- Use cases:
-  - `CreateTransactionUseCase`
-  - `PostTransactionUseCase`
-  - `GetAccountBalanceUseCase`
-  - `GenerateTrialBalanceUseCase`
-- REST endpoints:
+  - `Account` (primary entity)
+  - `Transaction` (primary entity)
+  - Journal entries
+  - Trading partners
+- Business operations:
+  - Create transaction
+  - Post transaction (finalize)
+  - Query account balance
+  - Generate trial balance report
+- API endpoints:
   ```
   POST   /api/v1/finance/transactions
   GET    /api/v1/finance/transactions/{id}
@@ -839,9 +840,9 @@ Migrate financial transaction and chart of accounts.
   - p95 < 2 seconds
 
 **Measurement:**
-- Performance testing with JMeter or Gatling
-- Production monitoring with Prometheus + Grafana
-- APM tool integration (New Relic, DataDog, or Elastic APM)
+- Performance testing with industry-standard tools
+- Production monitoring with metrics and visualization
+- Application Performance Monitoring (APM) tool integration
 
 **Acceptance Criteria:**
 - AC-PERF-001.1: Performance benchmarks are documented
@@ -874,11 +875,11 @@ Migrate financial transaction and chart of accounts.
 **Requirements:**
 - Horizontal scalability:
   - Stateless application design
-  - Session data in external store (Redis)
+  - Session data in external distributed store
   - Database connection pooling
 - Caching:
-  - Redis for distributed cache
-  - Caffeine for local cache
+  - Distributed cache for shared data
+  - Local cache for read-heavy data
   - Cache hit ratio > 80% for reference data
 
 **Acceptance Criteria:**
@@ -895,22 +896,22 @@ Migrate financial transaction and chart of accounts.
 **Priority:** CRITICAL
 
 **Requirements:**
-- Spring Security 6.x integration
+- Modern security framework integration
 - Multiple authentication methods:
   - Local username/password
-  - JWT tokens (for APIs)
+  - Token-based authentication (for APIs)
   - OAuth2/OIDC (for SSO)
   - Remember-me functionality
 - Password policy:
   - Minimum 8 characters
   - Mixed case + numbers + symbols
-  - BCrypt hashing (strength=10)
+  - Strong cryptographic hashing
   - Password expiration: 90 days
   - Password history: last 5 passwords
 
 **Acceptance Criteria:**
 - AC-SEC-001.1: Authentication is required for all non-public endpoints
-- AC-SEC-001.2: JWT tokens expire after 1 hour (refresh tokens: 7 days)
+- AC-SEC-001.2: API tokens expire after 1 hour (refresh tokens: 7 days)
 - AC-SEC-001.3: Password reset requires email verification
 - AC-SEC-001.4: Account lockout after 5 failed attempts (30-minute lockout)
 - AC-SEC-001.5: OAuth2 integration tested with popular providers
@@ -927,7 +928,7 @@ Migrate financial transaction and chart of accounts.
 **Requirements:**
 - Role-Based Access Control (RBAC)
 - Permission-based access control
-- Method-level security: `@PreAuthorize`
+- Method-level security enforcement
 - URL-level security: Pattern-based rules
 - Default deny (whitelist approach)
 
@@ -949,8 +950,8 @@ Migrate financial transaction and chart of accounts.
 
 **Requirements:**
 - Sensitive data encryption:
-  - Passwords: BCrypt hashed
-  - Config properties: AES-256 encrypted
+  - Passwords: Strong cryptographic hashing
+  - Config properties: Strong encryption (AES-256 equivalent)
   - Database encryption at rest (if applicable)
   - TLS 1.3 for data in transit
 - PII (Personally Identifiable Information):
@@ -958,10 +959,10 @@ Migrate financial transaction and chart of accounts.
   - Phone numbers masked in logs
   - Passwords never logged
 - Input validation:
-  - All inputs validated (Bean Validation)
+  - All inputs validated
   - SQL injection prevention (parameterized queries)
   - XSS prevention (output encoding)
-  - CSRF protection (Spring Security)
+  - CSRF protection
 
 **Acceptance Criteria:**
 - AC-SEC-003.1: All HTTP traffic uses HTTPS (TLS 1.3)
@@ -1241,7 +1242,7 @@ Migrate financial transaction and chart of accounts.
   - MySQL 8.0+ (secondary)
   - H2 (development/testing only)
 - Database migration:
-  - Flyway or Liquibase
+  - Version-controlled migration tool
   - Version controlled migration scripts
 
 **Acceptance Criteria:**
@@ -1255,13 +1256,13 @@ Migrate financial transaction and chart of accounts.
 **Priority:** HIGH
 
 **Requirements:**
-- Minimum: JDK 17 LTS
-- Recommended: JDK 21 LTS
+- Minimum: Modern LTS version of runtime platform
+- Recommended: Latest LTS version of runtime platform
 - Build and runtime validation
 
 **Acceptance Criteria:**
-- AC-COMPAT-003.1: Application compiles and runs on JDK 17
-- AC-COMPAT-003.2: CI/CD tests on target Java version
+- AC-COMPAT-003.1: Application compiles and runs on minimum supported runtime version
+- AC-COMPAT-003.2: CI/CD tests on target runtime version
 - AC-COMPAT-003.3: No deprecated API usage
 
 ---
@@ -1275,7 +1276,7 @@ Migrate financial transaction and chart of accounts.
 
 **Requirements:**
 - Preserve existing database schema
-- Flyway migration scripts for schema changes
+- Version-controlled migration scripts for schema changes
 - Baseline: Current production schema
 - Incremental migrations for improvements
 
@@ -1309,8 +1310,8 @@ Migrate financial transaction and chart of accounts.
 **Priority:** HIGH
 
 **Requirements:**
-- Legacy Struts2 system runs in read-only mode
-- New Spring Boot system handles all writes
+- Legacy system runs in read-only mode
+- New system handles all writes
 - Shared database (same schema)
 - Traffic routing: 90% new, 10% legacy (initial)
 
@@ -1366,7 +1367,7 @@ Migrate financial transaction and chart of accounts.
 **Priority:** HIGH
 
 **Requirements:**
-- Test framework: JUnit 5 + Mockito + AssertJ
+- Test framework: Modern unit testing framework with mocking support
 - Coverage targets:
   - Domain layer: 100%
   - Application layer: 90%
@@ -1389,10 +1390,10 @@ Migrate financial transaction and chart of accounts.
 **Priority:** HIGH
 
 **Requirements:**
-- Test framework: Spring Boot Test + Testcontainers
+- Test framework: Integration testing framework with containerization support
 - Test scopes:
   - Repository tests (with real database)
-  - API tests (with MockMvc or REST Assured)
+  - API tests (with web layer testing)
   - External integration tests (with mocks or test environments)
 - Test data:
   - Test data builders (pattern)
@@ -1506,9 +1507,9 @@ Migrate financial transaction and chart of accounts.
 
 ### 7.1 External Dependencies
 
-**DEP-001:** Spring Boot 3.x ecosystem maturity  
-**DEP-002:** Database driver compatibility (JDBC drivers for Java 17+)  
-**DEP-003:** Third-party library upgrades (Quartz, Activiti, JasperReports)  
+**DEP-001:** Modern application framework ecosystem maturity  
+**DEP-002:** Database driver compatibility with target runtime  
+**DEP-003:** Third-party library upgrades (job scheduling, reporting, workflow management)  
 **DEP-004:** Infrastructure team support (CI/CD, containerization)  
 **DEP-005:** Business stakeholder availability for UAT  
 
@@ -1533,8 +1534,8 @@ Migrate financial transaction and chart of accounts.
 
 ### 8.1 Technical Acceptance
 
-**ACCEPT-TECH-001:** All Struts2 dependencies removed from codebase  
-**ACCEPT-TECH-002:** All 354 Java files migrated to Spring Boot structure  
+**ACCEPT-TECH-001:** All legacy framework dependencies removed from codebase  
+**ACCEPT-TECH-002:** All application files migrated to modern architecture  
 **ACCEPT-TECH-003:** Test coverage meets targets (≥ 80% overall)  
 **ACCEPT-TECH-004:** All automated tests pass (unit, integration, E2E)  
 **ACCEPT-TECH-005:** Performance benchmarks meet targets (p95 < 200ms)  
@@ -1563,25 +1564,27 @@ Migrate financial transaction and chart of accounts.
 
 ### 9.1 Glossary
 
-**Aggregate:** A cluster of domain objects treated as a single unit (DDD pattern)  
-**BCrypt:** Password hashing algorithm  
-**Clean Architecture:** Architectural pattern emphasizing separation of concerns  
-**DTO:** Data Transfer Object - object for API communication  
+**API:** Application Programming Interface  
+**Authentication:** Process of verifying user identity  
+**Authorization:** Process of determining user permissions  
+**CRUD:** Create, Read, Update, Delete operations  
+**Domain Entity:** Core business object with identity  
 **HATEOAS:** Hypermedia as the Engine of Application State  
-**JPA:** Java Persistence API  
-**JWT:** JSON Web Token - authentication token format  
+**MFA:** Multi-Factor Authentication  
+**OAuth:** Open Authorization protocol  
+**OIDC:** OpenID Connect  
+**PII:** Personally Identifiable Information  
 **RBAC:** Role-Based Access Control  
 **REST:** Representational State Transfer  
-**Use Case:** Single business operation or user action  
-**Value Object:** Immutable object with no identity (DDD pattern)  
+**SSO:** Single Sign-On  
+**TLS:** Transport Layer Security  
 
 ### 9.2 References
 
 **Architecture:**
 - Clean Architecture by Robert C. Martin
 - Domain-Driven Design by Eric Evans
-- Spring Boot Reference Documentation
-- Spring Framework Documentation
+- Modern Web Application Development Best Practices
 
 **Migration:**
 - Migration Constitution (`.github/appmod/constitution.md`)
@@ -1590,7 +1593,7 @@ Migrate financial transaction and chart of accounts.
 
 **Standards:**
 - OpenAPI Specification 3.0
-- Google Java Style Guide
+- Industry Standard Coding Guidelines
 - OWASP Top 10
 - REST API Design Best Practices
 
@@ -1610,18 +1613,19 @@ Migrate financial transaction and chart of accounts.
 
 ### 10.2 Open Issues for Resolution
 
-**ISSUE-001:** Select reporting engine (JasperReports, BIRT, or custom)  
-**ISSUE-002:** Select logging strategy (ELK Stack vs Database)  
-**ISSUE-003:** Select scheduling solution (Quartz vs Spring Scheduler)  
-**ISSUE-004:** Select build tool (Maven 4 vs Gradle 8)  
+**ISSUE-001:** Select reporting engine solution  
+**ISSUE-002:** Select logging infrastructure strategy  
+**ISSUE-003:** Select scheduling solution  
+**ISSUE-004:** Select build tool  
 **ISSUE-005:** Decide on frontend strategy (API-only vs Server-side rendering)  
-**ISSUE-006:** Select BPM engine (Camunda, Flowable, or remove)  
+**ISSUE-006:** Select workflow/BPM engine (or remove if not needed)  
 
 ---
 
 **Document Status:** DRAFT - Awaiting Review and Approval  
 **Next Phase:** Implementation (Phase 3)  
 **Revision History:**
+- v1.1.0 (2026-02-09): Removed implementation details, made technology-agnostic
 - v1.0.0 (2025-02-09): Initial specification created by DesignAgent
 
 ---
